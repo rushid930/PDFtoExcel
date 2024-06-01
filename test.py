@@ -1,8 +1,10 @@
 # importing required modules 
-from pypdf import PdfReader 
-  
-# creating a pdf reader object 
-reader = PdfReader('OFW_Messages_Report_2024-05-20_18-53-36.pdf') 
+from pypdf import PdfReader
+
+# creating a pdf reader object
+
+#reader = PdfReader('OFW_Messages_Report_2024-05-20_18-53-36.pdf') 
+reader = PdfReader('OFW_Messages_Report_2024-05-20_18-54-21.pdf') 
 
 import xlsxwriter
 
@@ -22,7 +24,7 @@ for x in reader.pages:
     myArray = text.split("\n")
 
     wordsMessage = []
-    messageMatches = ["Message", "of 126"]
+    messageMatches = ["Message", "of"]
     sentMatches = ["Sent: "]
     sentText = ""
     fromMatches = ["From: "]
@@ -38,14 +40,16 @@ for x in reader.pages:
         if all(x in line for x in sentMatches):
             myArray2 = line.split('Sent: ')
             sentText = ("Sent: " + myArray2[1])  
-            messageText = (myArray2[0]) 
+            messageText = (myArray2[0])
+            messageText = messageText[:100]
             wordsMessage.append(sentText)
         if all(x in line for x in fromMatches):
             wordsMessage.append(line)
         if all(x in line for x in toMatches):
             wordsMessage.append(line)
         if all(x in line for x in subjectMatches):
-            wordsMessage.append(line)
+            subjectLine = line.replace('RE: ', '').replace('Re: ', '')
+            wordsMessage.append(subjectLine)
             wordsMessage.append(messageText)
             fullPage.append(wordsMessage.copy())
             wordsMessage.clear()

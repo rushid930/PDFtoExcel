@@ -27,10 +27,6 @@ def import_file():
             text += page.extract_text()
             text += '\n'
 
-        #with open("Output.txt", "w") as text_file:
-        #    text_file.write(text)
-        #print(text)
-
         myArray = text.split("\n")
 
         wordsMessage = []
@@ -46,8 +42,6 @@ def import_file():
 
         messageLine = ''
         attachLine = ''
-        prevLine = ''
-        lastLine = ''
         count2 = 0
 
         messageCount = 0
@@ -58,8 +52,6 @@ def import_file():
         subjectCount = 0
         attachCount = 0
         pageCount = 0
-
-        fullPage = []
 
         for line in myArray:
             #Start of Message
@@ -91,7 +83,6 @@ def import_file():
 
                 messageArray = line.split('of ')
                 messageLine = int(messageArray[0].replace('Message ', ''))
-                #wordsMessage.append(messageLine)
                 messageCount = 1
             if messageCount == 1:
                 if textCount == 1 or (attachCount == 1 and pageCount == 1 and messageText == ''):
@@ -99,29 +90,23 @@ def import_file():
                 if textCount != 2:
                     textCount = 1
             if any(x in line for x in sentMatches) & textCount == 1:
+                sentArray = line.split('Sent: ')
                 myArray2 = messageText.split('Sent: ')
-                sentText = myArray2[1].replace('at ', '')
+                sentText = sentArray[1].replace('at ', '')
                 messageText = myArray2[0]
-                #wordsMessage.append(sentText)
+                
                 sentCount = 1
-                textCount = 2
+                textCount = 2                    
             if all(x in line for x in fromMatches) & sentCount == 1:            
                 fromLine = line.replace('From: ', '')
-                #wordsMessage.append(fromLine)
                 fromCount = 1
             if all(x in line for x in toMatches) & fromCount == 1:
                 myArray3 = line.split('(First Viewed: ')
                 toLine = myArray3[0].replace('To: ', '')
                 firstViewLine = myArray3[1].replace('at ', '').replace(')', '')
-                #wordsMessage.append(toLine)
-                #wordsMessage.append(firstViewLine)
                 toCount = 1
             if all(x in line for x in subjectMatches) & toCount == 1:
-                #lastLine = line
                 subjectLine = line.replace('Subject: ', '').replace('RE: ', '').replace('Re: ', '')
-                #wordsMessage.append(subjectLine)
-                #wordsMessage.append(messageText)
-                #messageText = ''
                 subjectCount = 1            
             if subjectCount == 1:                 
                 if all (x in line for x in attachMatches):
@@ -131,9 +116,17 @@ def import_file():
             if all(x in line for x in pageMatches):
                 pageCount = 1
 
-            #prevLine = line
             count2 += 1
-
+        wordsMessage.append(messageLine)
+        wordsMessage.append(sentText)
+        wordsMessage.append(fromLine)
+        wordsMessage.append(toLine)
+        wordsMessage.append(firstViewLine)
+        wordsMessage.append(subjectLine)
+        messageText = messageText[:100]
+        wordsMessage.append(messageText)
+        wordsMessage.append(attachLine)
+        fullPDF.append(wordsMessage.copy())
         print("done")
 
         col = 0
